@@ -1,0 +1,343 @@
+{
+    "title": "vk_studio_dashboard",
+    "description": "",
+    "inputs": {
+        "input_HpsJgCzE": {
+            "options": {
+                "defaultValue": "_internal",
+                "token": "idx"
+            },
+            "title": "Index",
+            "type": "input.text"
+        },
+        "input_LFiKzkd8": {
+            "dataSources": {
+                "primary": "ds_MRjfDXTl"
+            },
+            "options": {
+                "defaultValue": "*",
+                "items": [
+                    {
+                        "label": "All",
+                        "value": "*"
+                    }
+                ],
+                "token": "ticket_state"
+            },
+            "title": "Ticket State",
+            "type": "input.dropdown"
+        },
+        "input_PCWyYaN2": {
+            "options": {
+                "defaultValue": 10,
+                "token": "num_pdbDubpp"
+            },
+            "title": "Number Input Title",
+            "type": "input.number"
+        },
+        "input_cFFhQR3p": {
+            "dataSources": {
+                "primary": "ds_4j966Htc"
+            },
+            "options": {
+                "defaultValue": [
+                    "*"
+                ],
+                "items": [
+                    {
+                        "label": "All",
+                        "value": "*"
+                    }
+                ],
+                "token": "app_name"
+            },
+            "title": "Application Name",
+            "type": "input.multiselect"
+        },
+        "input_global_trp": {
+            "options": {
+                "defaultValue": "-24h@h,now",
+                "token": "global_time"
+            },
+            "title": "Global Time Range",
+            "type": "input.timerange"
+        }
+    },
+    "defaults": {
+        "dataSources": {
+            "ds.search": {
+                "options": {
+                    "queryParameters": {
+                        "earliest": "$global_time.earliest$",
+                        "latest": "$global_time.latest$"
+                    }
+                }
+            }
+        },
+        "visualizations": {
+            "global": {
+                "showProgressBar": true
+            }
+        }
+    },
+    "visualizations": {
+        "viz_Nkz93ayl": {
+            "dataSources": {
+                "primary": "ds_gvQkpJxU"
+            },
+            "description": "Line Chart",
+            "title": "Count by Asset ID",
+            "type": "splunk.line"
+        },
+        "viz_Qf8g1UdK": {
+            "type": "abslayout.line"
+        },
+        "viz_hgsQU52e": {
+            "options": {
+                "icon": "splunk-enterprise-kvstore://icon-cloud__b26f30f1-329e-4739-89ab-0a8a8bd24e7d.svg",
+                "showValue": false
+            },
+            "type": "splunk.singlevalueicon"
+        },
+        "viz_iRKcoZWu": {
+            "dataSources": {
+                "primary": "ds_9WoZ7o7W"
+            },
+            "options": {
+                "backgroundColor": "transparent"
+            },
+            "type": "splunk.singlevalue"
+        },
+        "viz_mUdZvBX3": {
+            "options": {
+                "preserveAspectRatio": true,
+                "src": "splunk-enterprise-kvstore://69688c12d1bffeb8960d7d59"
+            },
+            "type": "splunk.image"
+        },
+        "viz_sNT9kbHQ": {
+            "cornerRadius": [
+                5,
+                5,
+                5,
+                5
+            ],
+            "options": {
+                "backgroundColor": "#ffffff",
+                "fontColor": "#dc4e41",
+                "fontFamily": "Arial",
+                "markdown": "### Hi,\n\nCreating the **Studio Dashboard** for training purposes.\n"
+            },
+            "type": "splunk.markdown"
+        },
+        "viz_sy0bCOnL": {
+            "options": {
+                "icon": "splunk-enterprise-kvstore://icon-datacenter__13a43013-4b5b-4553-a035-ebcb43b0bbcb.svg",
+                "showValue": false
+            },
+            "type": "splunk.singlevalueicon"
+        },
+        "viz_t485jFZM": {
+            "containerOptions": {
+                "description": {
+                    "color": "#294e70"
+                },
+                "title": {
+                    "color": "#dc4e41"
+                }
+            },
+            "dataSources": {
+                "primary": "ds_fECyEq1j"
+            },
+            "description": "Bar Chart",
+            "options": {
+                "backgroundColor": "transparent",
+                "legendDisplay": "right",
+                "xAxisTitleText": "Priority",
+                "yAxisLabelVisibility": "show",
+                "yAxisTitleText": "Total"
+            },
+            "title": "Count by Severity",
+            "type": "splunk.column"
+        }
+    },
+    "dataSources": {
+        "ds_4j966Htc": {
+            "name": "app_name",
+            "options": {
+                "extend": "ds_TC4SOh51",
+                "query": "| stats count by application_name"
+            },
+            "type": "ds.chain"
+        },
+        "ds_9WoZ7o7W": {
+            "name": "index",
+            "options": {
+                "query": "| tstats count where index=$idx$"
+            },
+            "type": "ds.search"
+        },
+        "ds_MRjfDXTl": {
+            "name": "ticket_state",
+            "options": {
+                "extend": "ds_TC4SOh51",
+                "query": "| stats count by current_ticket_state"
+            },
+            "type": "ds.chain"
+        },
+        "ds_TC4SOh51": {
+            "name": "base_search1",
+            "options": {
+                "query": "index=main source=Sample_tickets.csv \n| stats count by severity, current_ticket_state, asset_id, application_name",
+                "queryParameters": {
+                    "earliest": "$global_time.earliest$",
+                    "latest": "$global_time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_fECyEq1j": {
+            "name": "severity",
+            "options": {
+                "extend": "ds_TC4SOh51",
+                "query": "| search current_ticket_state=\"$ticket_state$\" \n| stats count by severity"
+            },
+            "type": "ds.chain"
+        },
+        "ds_gvQkpJxU": {
+            "name": "asset_id",
+            "options": {
+                "extend": "ds_TC4SOh51",
+                "query": "| search application_name=$app_name$| stats count by asset_id"
+            },
+            "type": "ds.chain"
+        },
+        "ds_oFDuHwFs": {
+            "name": "vk_savedsearch",
+            "options": {
+                "app": "search",
+                "ref": "vk_savedsearch"
+            },
+            "type": "ds.savedSearch"
+        }
+    },
+    "layout": {
+        "globalInputs": [
+            "input_global_trp",
+            "input_LFiKzkd8",
+            "input_cFFhQR3p",
+            "input_HpsJgCzE",
+            "input_PCWyYaN2"
+        ],
+        "layoutDefinitions": {
+            "layout_1": {
+                "options": {
+                    "backgroundColor": "#62b3b2",
+                    "height": 960,
+                    "width": 1440
+                },
+                "structure": [
+                    {
+                        "item": "viz_Qf8g1UdK",
+                        "position": {
+                            "from": {
+                                "x": 583,
+                                "y": 437
+                            },
+                            "to": {
+                                "x": 914,
+                                "y": 431
+                            }
+                        },
+                        "type": "line"
+                    },
+                    {
+                        "item": "viz_Nkz93ayl",
+                        "position": {
+                            "h": 340,
+                            "w": 860,
+                            "x": 580,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_sy0bCOnL",
+                        "position": {
+                            "h": 190,
+                            "w": 200,
+                            "x": 400,
+                            "y": 340
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_hgsQU52e",
+                        "position": {
+                            "h": 170,
+                            "w": 216,
+                            "x": 920,
+                            "y": 350
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_iRKcoZWu",
+                        "position": {
+                            "h": 60,
+                            "w": 80,
+                            "x": 460,
+                            "y": 410
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_t485jFZM",
+                        "position": {
+                            "h": 130,
+                            "w": 140,
+                            "x": 960,
+                            "y": 390
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_mUdZvBX3",
+                        "position": {
+                            "h": 320,
+                            "w": 580,
+                            "x": 0,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_sNT9kbHQ",
+                        "position": {
+                            "h": 300,
+                            "w": 650,
+                            "x": 40,
+                            "y": 550
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            }
+        },
+        "options": {
+            "submitButton": true
+        },
+        "tabs": {
+            "items": [
+                {
+                    "label": "Tab1",
+                    "layoutId": "layout_1"
+                }
+            ]
+        }
+    },
+    "applicationProperties": {
+        "hideEdit": false
+    }
+}
